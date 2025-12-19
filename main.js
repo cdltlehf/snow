@@ -8,6 +8,8 @@ function main() {
   const near = 0.05;
   const far = 0.5;
   const radius = 1.0;
+  const minLightness = 0.9;
+  const maxLightness = 1.0;
 
   canvas.style.position = "fixed";
   canvas.style.top = "0";
@@ -46,20 +48,23 @@ function main() {
   for (let i = 0; i < numSnowFlakes; i++) {
     const x = Math.random();
     const y = Math.random();
+    const lightness = Math.random() * (maxLightness - minLightness) +
+      minLightness;
+    const color = `hsl(0, 0%, ${lightness * 100}%)`;
     const z = Math.random() * (far - near) + near;
-    snowFlakes.push({ x, y, z });
+    snowFlakes.push({ x, y, z, color });
   }
   const render = () => {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.fill();
 
-    for (const { x: rawX, y: rawY, z } of snowFlakes) {
+    for (const { x: rawX, y: rawY, z, color } of snowFlakes) {
       const x = rawX * canvas.width;
       const y = rawY * canvas.height;
       const r = radius / z + minRadius;
       ctx.beginPath();
       ctx.arc(x, y, r, 0, Math.PI * 2);
-      ctx.fillStyle = "#ffffff";
+      ctx.fillStyle = color;
       ctx.fill();
       ctx.closePath();
     }
