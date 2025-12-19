@@ -79,4 +79,10 @@ function main() {
   document.body.append(canvas);
 }
 
-globalThis.onload = main;
+if ("window" in globalThis) {
+  if (globalThis.document.readyState === "loading") {
+    globalThis.addEventListener("DOMContentLoaded", main);
+  } else {
+    main();
+  }
+}
