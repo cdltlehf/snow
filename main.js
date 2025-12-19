@@ -2,8 +2,12 @@ function main() {
   const canvas = document.createElement("canvas");
   const ctx = canvas.getContext("2d");
 
-  const velocityX = 0.001;
-  const velocityY = 0.001;
+  const globalDx = 0.0;
+  const globalDy = 0.001;
+
+  const randomDxFactor = 0.0002;
+  const mouseDxFactor = 0.0005;
+
   const minRadius = 2;
   const near = 0.05;
   const far = 0.5;
@@ -19,9 +23,10 @@ function main() {
   canvas.style.display = "block";
   canvas.style.filter = "blur(5px)";
   canvas.style.pointerEvents = "none";
+  canvas.style.opacity = "0.8";
 
   const dpi = globalThis.devicePixelRatio || 1;
-  const mouse = { x: 0, y: 0 };
+  const mouse = { x: 0.5, y: 0.5 };
 
   const resizeCanvas = (entries) => {
     for (entry of entries) {
@@ -52,7 +57,9 @@ function main() {
       minLightness;
     const color = `hsl(0, 0%, ${lightness * 100}%)`;
     const z = Math.random() * (far - near) + near;
-    snowFlakes.push({ x, y, z, color });
+    const dx = globalDx + (Math.random() - 0.5) * randomDxFactor;
+    const dy = globalDy;
+    snowFlakes.push({ x, y, z, dx, dy, color });
   }
   const render = () => {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -69,8 +76,9 @@ function main() {
       ctx.closePath();
     }
     for (const snowFlake of snowFlakes) {
-      snowFlake.y += velocityY / snowFlake.z;
-      snowFlake.x += ((mouse.x - 0.5) * velocityX) / snowFlake.z;
+      snowFlake.y += snowFlake.dy / snowFlake.z;
+      snowFlake.x += snowFlake.dx / snowFlake.z;
+      snowFlake.x += (mouse.x - 0.5) * 2.0 * mouseDxFactor / snowFlake.z;
       if (snowFlake.y > 1.0) {
         snowFlake.y = 0.0;
         snowFlake.x = Math.random();
